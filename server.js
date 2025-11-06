@@ -1,23 +1,47 @@
 const express = require("express");
+const axios = require("axios");
 const app = express();
-const PORT = 3000;
+
+const PORT = process.env.PORT || 3000;
+const VDO_API_SECRET = process.env.VDO_API_SECRET;
+const VIDEO_ID = process.env.VIDEO_ID;
 
 app.use(express.json());
 
-// 🧠 When VdoCipher sends playback or analytics data, it will hit this route:
+// 🧠 Webhook endpoint: logs playback/analytics events from VdoCipher
 app.post("/vdocipher-webhook", (req, res) => {
   const event = req.body;
   console.log("🎬 Received VdoCipher webhook event:", event);
-
-  // You could later save this to a database, match user IDs, etc.
   res.sendStatus(200);
 });
 
-// Test route for your browser
+// 🔐 OTP generation endpoint: creates one-time playback tokens
+app.post("/vdo-otp", async (req, res) => {
+  const { user } = req.body;
+
+  try {
+    const response = await axios.post(
+      `https://dev.vdocipher.com/api/videos/${VIDEO_ID}/otp`,
+      {
+        ttl: 300, // valid for 5 minutes
+        userId: user?.id || "unknown",
+        watermark: { text: `${user?.name || "Guest"} (${user?.email || "N/A"})` }
+      },
+      { headers: { Authorization: `Apisecret ${VDO_API_SECRET}` } }
+    );
+
+    res.json(response.data);
+  } catch (err) {
+    console.error("❌ Error getting OTP:", err.response?.data || err.message);
+    res.status(500).json({ error: "Failed to get OTP" });
+  }
+});
+
+// 🧪 Test route for browser
 app.get("/", (req, res) => {
-  res.send("✅ VdoCipher tracking server is running and ready for webhooks!");
+  res.send("✅ VdoCipher tracking + OTP server is running!");
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
