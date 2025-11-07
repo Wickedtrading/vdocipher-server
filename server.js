@@ -27,7 +27,8 @@ app.post("/vdo-otp", async (req, res) => {
       userId: user?.id || "unknown",
       watermark: { text: `${user?.name || "Guest"} (${user?.email || "N/A"})` }
     },
-    { headers: { Authorization: `Apisecret ${VDO_API_SECRET.trim()}` } }
+   { headers: { Authorization: `Apisecret ${VDO_API_SECRET}` } } 
+
 
   );
 
