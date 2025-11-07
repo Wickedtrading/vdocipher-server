@@ -20,15 +20,20 @@ app.post("/vdo-otp", async (req, res) => {
   const { user } = req.body;
 
   try {
-    const response = await axios.post(
-      `https://dev.vdocipher.com/api/videos/${VIDEO_ID}/otp`,
-      {
-        ttl: 300, // valid for 5 minutes
-        userId: user?.id || "unknown",
-        watermark: { text: `${user?.name || "Guest"} (${user?.email || "N/A"})` }
-      },
-      { headers: { Authorization: `Apisecret ${VDO_API_SECRET}` } }
-    );
+  const response = await axios.post(
+    `https://dev.vdocipher.com/api/videos/${VIDEO_ID}/otp`,
+    {
+      ttl: 300, // valid for 5 minutes
+      userId: user?.id || "unknown",
+      watermark: { text: `${user?.name || "Guest"} (${user?.email || "N/A"})` }
+    },
+    {
+      headers: {
+        Authorization: `Apisecret ${VDO_API_SECRET}`
+      }
+    }
+  );
+
 
     res.json(response.data);
   } catch (err) {
