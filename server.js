@@ -2,6 +2,9 @@ const express = require("express");
 const axios = require("axios");
 const path = require("path");
 const app = express();
+const path = require("path");
+app.use(express.static(path.join(__dirname)));
+
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname))); // ✅ serve watch.html
