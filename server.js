@@ -1,8 +1,11 @@
 const express = require("express");
 const axios = require("axios");
+const path = require("path");
 const app = express();
 
 app.use(express.json());
+app.use(express.static(path.join(__dirname))); // ✅ serve watch.html
+
 
 const VDO_API_SECRET = process.env.VDO_API_SECRET; // from environment
 const VIDEO_ID = process.env.VIDEO_ID; // from environment
