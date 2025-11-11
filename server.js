@@ -1,14 +1,11 @@
 const express = require("express");
 const axios = require("axios");
 const path = require("path");
-const app = express();
-const path = require("path");
-app.use(express.static(path.join(__dirname)));
 
+const app = express();
 
 app.use(express.json());
-app.use(express.static(path.join(__dirname))); // ✅ serve watch.html
-
+app.use(express.static(path.join(__dirname))); // ✅ serve watch.html and other static files
 
 const VDO_API_SECRET = process.env.VDO_API_SECRET; // from environment
 const VIDEO_ID = process.env.VIDEO_ID; // from environment
@@ -27,8 +24,7 @@ app.post("/vdo-otp", async (req, res) => {
       },
       {
         headers: {
-          // ✅ Correct header format:
-          Authorization: `Apisecret ${VDO_API_SECRET}`,
+          Authorization: `Apisecret ${VDO_API_SECRET}`, // ✅ correct format
         },
       }
     );
