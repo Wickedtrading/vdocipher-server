@@ -7,7 +7,8 @@ const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname))); // serve watch.html + assets
 
-const VDO_API_SECRET = process.env.PMfaUI7dGTrl7t3HUfr4JzBIROtxbrQCdGO6JyV0FmUimqAIGAdDkEHFEaCuJcGz; // MUST be set in Render Env Vars
+const VDO_API_SECRET = process.env.VDO_API_SECRET;
+
 
 // ===============================
 //     OTP ENDPOINT
