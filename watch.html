@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8" />
-  <title>Video Player</title>
+  <title>Watch Video</title>
   <style>
     body { background: #000; margin: 0; padding: 0; }
     #player-container { width: 100%; max-width: 800px; margin: 20px auto; }
@@ -10,54 +10,47 @@
   </style>
 </head>
 
-
 <body>
   <div id="player-container">
-    <div id="player">Loading video...</div>
+    <p style="color:white;">Loading video...</p>
   </div>
 
   <script>
-    const serverUrl = "https://vdocipher-server.onrender.com/vdo-otp";
-
-    // Read VIDEO_ID from URL ?videoId=xxxx
     const params = new URLSearchParams(window.location.search);
     const VIDEO_ID = params.get("videoId");
 
     if (!VIDEO_ID) {
-      document.getElementById("player").innerHTML =
+      document.getElementById("player-container").innerHTML =
         "<p style='color:white;'>❌ Missing videoId in URL.</p>";
       throw new Error("Missing videoId");
     }
 
     async function loadVideo() {
-      const response = await fetch(serverUrl, {
+      const res = await fetch("/vdo-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           videoId: VIDEO_ID,
           user: {
             id: "MN-USER-123",
-            name: "Test User",
-            email: "test@example.com"
-          }
-        })
+            name: "Michael",
+            email: "michael@example.com",
+          },
+        }),
       });
 
-      const data = await response.json();
+      const data = await res.json();
 
       const iframe = document.createElement("iframe");
       iframe.src = `https://player.vdocipher.com/v2/?otp=${data.otp}&playbackInfo=${data.playbackInfo}`;
 
-      const container = document.getElementById("player");
+      const container = document.getElementById("player-container");
       container.innerHTML = "";
       container.appendChild(iframe);
     }
 
-    // Load video the first time
     loadVideo();
-
-    // Refresh OTP every 4 minutes
-    setInterval(loadVideo, 240000); // 240,000 ms = 4 minutes
+    setInterval(loadVideo, 240000);
   </script>
 </body>
 </html>
