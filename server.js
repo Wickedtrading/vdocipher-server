@@ -23,7 +23,7 @@ app.post("/vdo-otp", async (req, res) => {
     const response = await axios.post(
       `https://dev.vdocipher.com/api/videos/${videoId}/otp`,
       {
-        ttl: 300, // 5 minutes
+        ttl: 300,
         userId: user?.id || "unknown",
         watermark: {
           text: `${user?.name || "Guest"} (${user?.email || "N/A"})`,
@@ -31,7 +31,7 @@ app.post("/vdo-otp", async (req, res) => {
       },
       {
         headers: {
-          Authorization: `Apisecret ${VDO_API_SECRET}`, // CORRECT format
+          Authorization: `Apisecret ${VDO_API_SECRET}`,
         },
       }
     );
