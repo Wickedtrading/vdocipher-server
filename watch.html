@@ -1,18 +1,30 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Watch Video</title>
   <style>
-    body { background: #000; margin: 0; padding: 0; }
-    #player-container { width: 100%; max-width: 800px; margin: 20px auto; }
-    iframe { width: 100%; height: 450px; border: none; }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #000;
+      margin: 0;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      max-width: 960px;
+      max-height: 540px;
+    }
   </style>
 </head>
-
 <body>
-  <div id="player-container">
-    <p style="color:white;">Loading video...</p>
+  <div id="vdoContainer">
+    <p style="color:white;text-align:center;">Loading video...</p>
   </div>
 
   <script>
@@ -20,37 +32,47 @@
     const VIDEO_ID = params.get("videoId");
 
     if (!VIDEO_ID) {
-      document.getElementById("player-container").innerHTML =
-        "<p style='color:white;'>❌ Missing videoId in URL.</p>";
+      document.getElementById("vdoContainer").innerHTML =
+        "<p style='color:white;text-align:center;'>❌ Missing videoId in URL.</p>";
       throw new Error("Missing videoId");
     }
 
     async function loadVideo() {
-      const res = await fetch("/vdo-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          videoId: VIDEO_ID,
-          user: {
-            id: "MN-USER-123",
-            name: "Michael",
-            email: "michael@example.com",
-          },
-        }),
-      });
+      try {
+        const response = await fetch("/vdo-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            videoId: VIDEO_ID,
+            user: {
+              id: "MN-1001",
+              name: "Michael",
+              email: "michael@example.com"
+            }
+          })
+        });
 
-      const data = await res.json();
+        if (!response.ok) throw new Error("Failed to get OTP");
 
-      const iframe = document.createElement("iframe");
-      iframe.src = `https://player.vdocipher.com/v2/?otp=${data.otp}&playbackInfo=${data.playbackInfo}`;
+        const { otp, playbackInfo } = await response.json();
 
-      const container = document.getElementById("player-container");
-      container.innerHTML = "";
-      container.appendChild(iframe);
+        const iframe = document.createElement("iframe");
+        iframe.allow = "encrypted-media";
+        iframe.allowFullscreen = true;
+        iframe.src = `https://player.vdocipher.com/v2/?otp=${otp}&playbackInfo=${playbackInfo}`;
+
+        const container = document.getElementById("vdoContainer");
+        container.innerHTML = "";
+        container.appendChild(iframe);
+      } catch (err) {
+        console.error("Video load error:", err);
+        document.getElementById("vdoContainer").innerHTML =
+          "<p style='color:white;text-align:center;'>❌ Error loading video.</p>";
+      }
     }
 
     loadVideo();
-    setInterval(loadVideo, 240000);
+    setInterval(loadVideo, 240000); // refresh every 4 minutes
   </script>
 </body>
 </html>
